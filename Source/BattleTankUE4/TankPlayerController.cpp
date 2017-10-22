@@ -76,12 +76,8 @@ bool ATankPlayerController::GetLookHitResultLocation(FVector2D CrosshairLocation
 	if (HitActor)
 	{
 		OutHitLocation = HitActor->GetActorLocation();
-		UE_LOG(LogTemp, Warning, TEXT("Crosshair Looks At : %s"), *(HitActor->GetName()));
 		return true;
 	}
-	else
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Crosshair Looks At Nothing"));
-	}
+
 	return false;
 }
