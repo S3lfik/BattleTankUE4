@@ -4,8 +4,10 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "Runtime/Engine/Classes/Components/StaticMeshComponent.h"
 #include "TankAimingComponent.generated.h"
 
+class UTankBarrel;
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class BATTLETANKUE4_API UTankAimingComponent : public UActorComponent
@@ -16,8 +18,8 @@ public:
 	// Sets default values for this component's properties
 	UTankAimingComponent();
 
-	void AimAt(FVector HitLocation);
-	void SetBarrelRef(UStaticMeshComponent* BarrelToSet);
+	void AimAt(FVector HitLocation, float LaunchSpeed);
+	void SetBarrelRef(UTankBarrel* BarrelToSet);
 
 protected:
 	// Called when the game starts
@@ -27,8 +29,10 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
+private:
+	void MoveBarrelTowards(FVector AimDirection);
 	
 private:
-	UStaticMeshComponent* Barrel;
+	UTankBarrel* TankBarrel;
 	
 };

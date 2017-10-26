@@ -42,12 +42,15 @@ void ATankPlayerController::AimTowardCrosshair()
 	{
 		Tank->AimAt(OutHitLocation);
 	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Player doesn't set HitLocation!!"));
+	}
 }
 
 bool ATankPlayerController::IsSightRayHitLandscape(FVector& OutHitLocation) const
 {
-	OutHitLocation = FVector(0.f);
-	CrosshairXRatio;
+	OutHitLocation = FVector(1.f);
 	int32 ViewportWidth, ViewportHeight;
 	GetViewportSize(ViewportWidth, ViewportHeight);
 	FVector2D CrosshairLocation = FVector2D(ViewportWidth * CrosshairXRatio, ViewportHeight * CrosshairYRatio);
@@ -61,23 +64,30 @@ bool ATankPlayerController::IsSightRayHitLandscape(FVector& OutHitLocation) cons
 bool ATankPlayerController::GetLookHitResultLocation(FVector2D CrosshairLocation, FVector & OutHitLocation) const
 {
 	FVector CrosshairWorldLocation;
-	FVector CrosshairWorldDirction;
+	FVector LookDirection;
 	
 	FHitResult LookHitResult;
 	FViewLine ViewLine;
 
-	DeprojectScreenPositionToWorld(CrosshairLocation.X, CrosshairLocation.Y, CrosshairWorldLocation, CrosshairWorldDirction);
+	DeprojectScreenPositionToWorld(CrosshairLocation.X, CrosshairLocation.Y, CrosshairWorldLocation, LookDirection);
 
-	ViewLine.ViewLineStart = CrosshairWorldLocation;
-	ViewLine.ViewLineEnd = CrosshairWorldLocation + CrosshairWorldDirction * ViewLength;
+	ViewLine.ViewLineStart = PlayerCameraManager->GetCameraLocation();//CrosshairWorldLocation;
+	ViewLine.ViewLineEnd = CrosshairWorldLocation + LookDirection * ViewLength;
 	GetWorld()->LineTraceSingleByChannel(LookHitResult, ViewLine.ViewLineStart, ViewLine.ViewLineEnd, ECC_Visibility);
+
+	
 
 	AActor* HitActor = LookHitResult.GetActor();
 	if (HitActor)
 	{
-		OutHitLocation = HitActor->GetActorLocation();
+		UE_LOG(LogTemp, Warning, TEXT("ViewLineStart: %s"), *(ViewLine.ViewLineStart.ToString()));
+		UE_LOG(LogTemp, Warning, TEXT("HitTest: %s"), *(LookDirection.ToString()));
+		UE_LOG(LogTemp, Warning, TEXT("ViewLineEnd: %s"), *(ViewLine.ViewLineEnd.ToString()));
+		OutHitLocation = HitActor->GetTargetLocation();
 		return true;
 	}
+	else
+		UE_LOG(LogTemp, Warning, TEXT("HitTest Failed: %s"), *(HitActor->GetTargetLocation().ToString()));
 
 	return false;
 }

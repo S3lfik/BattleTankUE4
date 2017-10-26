@@ -1,6 +1,8 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "TankAimingComponent.h"
+#include "TankBarrel.h"
+#include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
 
 
 // Sets default values for this component's properties
@@ -10,7 +12,7 @@ UTankAimingComponent::UTankAimingComponent()
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
 
-	Barrel = nullptr;
+	TankBarrel = nullptr;
 
 	// ...
 }
@@ -25,21 +27,37 @@ void UTankAimingComponent::BeginPlay()
 	
 }
 
-void UTankAimingComponent::AimAt(FVector HitLocation)
+void UTankAimingComponent::AimAt(FVector HitLocation, float LaunchSpeed)
 {
 	auto OwnerName = GetOwner()->GetName();
 	
-	if (Barrel)
-		UE_LOG(LogTemp, Warning, TEXT("%s Aims From %s At: %s"), 
+	if (TankBarrel)
+	{
+
+		FVector LaunchVelocity;
+		FVector StartLocation = TankBarrel->GetSocketLocation(FName("ProjectileOut"));
+
+		if (!UGameplayStatics::SuggestProjectileVelocity(this, LaunchVelocity, StartLocation, HitLocation, LaunchSpeed, 
+			false, 0.f, 0.f, ESuggestProjVelocityTraceOption::DoNotTrace))//, FCollisionResponseParams::DefaultResponseParam, TArray<AActor*>(), true))
+		{
+			UE_LOG(LogTemp, Warning, TEXT("%s No Aim found! "),
+				*(OwnerName));
+			return;
+		}
+
+		UE_LOG(LogTemp, Warning, TEXT("%s Aims at %s "),
 			*(OwnerName),
-			*(Barrel->GetComponentLocation().ToCompactString()), 
-			*(HitLocation.ToCompactString()));
+			*(HitLocation.ToString()));
+
+		FVector AimDirection = LaunchVelocity.GetSafeNormal();
+		MoveBarrelTowards(AimDirection);
+	}
 }
 
-void UTankAimingComponent::SetBarrelRef(UStaticMeshComponent * BarrelToSet)
+void UTankAimingComponent::SetBarrelRef(UTankBarrel * BarrelToSet)
 {
 	if (BarrelToSet)
-		Barrel = BarrelToSet;
+		TankBarrel = BarrelToSet;
 }
 
 // Called every frame
@@ -48,5 +66,17 @@ void UTankAimingComponent::TickComponent(float DeltaTime, ELevelTick TickType, F
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
 	// ...
+}
+
+void UTankAimingComponent::MoveBarrelTowards(FVector AimDirection)
+{
+	if (!TankBarrel)
+		return;
+
+	FRotator BarrelRotator = TankBarrel->GetForwardVector().Rotation();
+	FRotator AimAsRotator = AimDirection.Rotation();
+	FRotator RotationDiff = AimAsRotator - BarrelRotator;
+
+	TankBarrel->Elevate(RotationDiff.Pitch);
 }
 
