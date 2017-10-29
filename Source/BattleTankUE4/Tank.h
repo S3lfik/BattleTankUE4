@@ -8,6 +8,8 @@
 
 class UTankAimingComponent;
 class UTankBarrel;
+class UTankTurret;
+class AProjectile;
 
 UCLASS()
 class BATTLETANKUE4_API ATank : public APawn
@@ -23,6 +25,12 @@ public:
 	UFUNCTION(BlueprintCallable, Category=Setup)
 	void SetBarrel(UTankBarrel* BarrelToSet);
 
+	UFUNCTION(BlueprintCallable, Category = Setup)
+	void SetTurret(UTankTurret* TurretToSet);
+
+	UFUNCTION(BlueprintCallable, Category = Firing)
+	void Fire();
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -37,6 +45,16 @@ public:
 private:
 
 	UPROPERTY(EditAnywhere, Category = Firing)
-	float LounchSpeed = 10000.f;
+	float LaunchSpeed = 100000.f;
+
+	UPROPERTY(EditAnywhere, Category = Setup)
+	TSubclassOf<AProjectile> ProjectileRef;
+
+	// Local Barrel ptr for projectile spawning
+	UTankBarrel* TankBarrel;
+
+	float ReloadTimeInSeconds = 2.f;
+
+	double LastFireTime = 0.0;
 	
 };

@@ -80,14 +80,11 @@ bool ATankPlayerController::GetLookHitResultLocation(FVector2D CrosshairLocation
 	AActor* HitActor = LookHitResult.GetActor();
 	if (HitActor)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("ViewLineStart: %s"), *(ViewLine.ViewLineStart.ToString()));
-		UE_LOG(LogTemp, Warning, TEXT("HitTest: %s"), *(LookDirection.ToString()));
-		UE_LOG(LogTemp, Warning, TEXT("ViewLineEnd: %s"), *(ViewLine.ViewLineEnd.ToString()));
-		OutHitLocation = HitActor->GetTargetLocation();
+		OutHitLocation = LookHitResult.Location;
 		return true;
 	}
 	else
-		UE_LOG(LogTemp, Warning, TEXT("HitTest Failed: %s"), *(HitActor->GetTargetLocation().ToString()));
+		UE_LOG(LogTemp, Warning, TEXT("HitTest Failed"));
 
 	return false;
 }

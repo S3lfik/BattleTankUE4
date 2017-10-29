@@ -2,17 +2,18 @@
 
 #include "TankAimingComponent.h"
 #include "TankBarrel.h"
+#include "TankTurret.h"
 #include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
 
 
 // Sets default values for this component's properties
 UTankAimingComponent::UTankAimingComponent()
+	: TankBarrel(nullptr)
+	, TankTurret(nullptr)
 {
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
-
-	TankBarrel = nullptr;
 
 	// ...
 }
@@ -40,14 +41,8 @@ void UTankAimingComponent::AimAt(FVector HitLocation, float LaunchSpeed)
 		if (!UGameplayStatics::SuggestProjectileVelocity(this, LaunchVelocity, StartLocation, HitLocation, LaunchSpeed, 
 			false, 0.f, 0.f, ESuggestProjVelocityTraceOption::DoNotTrace))//, FCollisionResponseParams::DefaultResponseParam, TArray<AActor*>(), true))
 		{
-			UE_LOG(LogTemp, Warning, TEXT("%s No Aim found! "),
-				*(OwnerName));
 			return;
 		}
-
-		UE_LOG(LogTemp, Warning, TEXT("%s Aims at %s "),
-			*(OwnerName),
-			*(HitLocation.ToString()));
 
 		FVector AimDirection = LaunchVelocity.GetSafeNormal();
 		MoveBarrelTowards(AimDirection);
@@ -58,6 +53,12 @@ void UTankAimingComponent::SetBarrelRef(UTankBarrel * BarrelToSet)
 {
 	if (BarrelToSet)
 		TankBarrel = BarrelToSet;
+}
+
+void UTankAimingComponent::SetTurretRef(UTankTurret * TurretToSet)
+{
+	if (TurretToSet)
+		TankTurret = TurretToSet;
 }
 
 // Called every frame
@@ -78,5 +79,17 @@ void UTankAimingComponent::MoveBarrelTowards(FVector AimDirection)
 	FRotator RotationDiff = AimAsRotator - BarrelRotator;
 
 	TankBarrel->Elevate(RotationDiff.Pitch);
+	TankTurret->Rotate(RotationDiff.Yaw);
+}
+
+void UTankAimingComponent::MoveTurretTowards(FVector AimDirection)
+{
+	if (!TankTurret)
+		return;
+	FRotator BarrelRotator = TankBarrel->GetForwardVector().Rotation();
+	FRotator AimAsRotator = AimDirection.Rotation();
+	FRotator RotationDiff = AimAsRotator - BarrelRotator;
+
+	TankTurret->Rotate(RotationDiff.Yaw);
 }
 
