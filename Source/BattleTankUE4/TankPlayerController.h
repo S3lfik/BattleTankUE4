@@ -42,11 +42,11 @@ private:
 	bool GetLookHitResultLocation(FVector2D CrosshairLocation, FVector & OutHitLocation) const;
 
 private:
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditDefaultsOnly)
 	float CrosshairXRatio = 0.5f;
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditDefaultsOnly)
 	float CrosshairYRatio = 0.333f;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditDefaultsOnly)
 	float ViewLength = 1000000.f;
 };

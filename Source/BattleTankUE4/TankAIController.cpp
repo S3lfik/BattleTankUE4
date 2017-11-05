@@ -4,6 +4,7 @@
 #include "Runtime/Engine/Classes/Engine/World.h"
 
 
+
 void ATankAIController::BeginPlay()
 {
 	Super::BeginPlay();
@@ -16,16 +17,15 @@ void ATankAIController::Tick(float DeltaTime)
 
 
 	ATank* PlayerTank = Cast<ATank>(GetWorld()->GetFirstPlayerController()->GetPawn());
+	ATank* ControlledTank = Cast<ATank>(GetPawn());
 
-	if (PlayerTank)
-	{
-		ATank* ControlledTank = Cast<ATank>(GetPawn());
+	if (!PlayerTank || !ControlledTank) return;
+		
+	MoveToActor(PlayerTank, AcceptanceRadius);
 
-		if (ControlledTank)
-		{
-			ControlledTank->AimAt(PlayerTank->GetActorLocation());
-			ControlledTank->Fire();
-		}
-	}
+	ControlledTank->AimAt(PlayerTank->GetActorLocation());
+	ControlledTank->Fire();
+
+
 }
 

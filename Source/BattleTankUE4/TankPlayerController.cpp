@@ -42,10 +42,6 @@ void ATankPlayerController::AimTowardCrosshair()
 	{
 		Tank->AimAt(OutHitLocation);
 	}
-	else
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Player doesn't set HitLocation!!"));
-	}
 }
 
 bool ATankPlayerController::IsSightRayHitLandscape(FVector& OutHitLocation) const

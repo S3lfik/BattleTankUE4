@@ -10,6 +10,7 @@
 // Sets default values
 ATank::ATank()
 	: TankBarrel(nullptr)
+	, TankAimingComponent(nullptr)
 {
  	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
@@ -50,7 +51,6 @@ void ATank::Fire()
 	auto Projectile = GetWorld()->SpawnActor<AProjectile>(ProjectileRef
 		, TankBarrel->GetSocketLocation(FName("ProjectileOut"))
 		, TankBarrel->GetSocketRotation(FName("ProjectileOut")));
-	UE_LOG(LogTemp, Warning, TEXT("Tank Fires!"));
 
 	if (Projectile)
 		Projectile->LaunchProjectile(LaunchSpeed);
