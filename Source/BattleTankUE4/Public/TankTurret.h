@@ -18,7 +18,7 @@ public:
 	void Rotate(float RelativeSpeed);
 
 private:
-	UPROPERTY(EditDefaultsOnly, Category = Aiming)
+	UPROPERTY(EditDefaultsOnly, Category = "Aiming")
 	float MaxRotationDegreesPerSecond = 25.f;
 	
 	

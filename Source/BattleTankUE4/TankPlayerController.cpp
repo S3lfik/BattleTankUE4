@@ -1,6 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "TankPlayerController.h"
+#include "TankAimingComponent.h"
 #include "Runtime/Engine/Classes/Engine/World.h"
 
 
@@ -8,17 +9,14 @@
 void ATankPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
+	auto AimingComponent = GetControlledTank()->FindComponentByClass<UTankAimingComponent>();
 
-	auto ControlledTank = GetControlledTank();
-	if (ControlledTank)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("%s is posessed by player"), *(ControlledTank->GetName()));
-	}
-	else
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Player doesn't posses any tank"));
-	}
+	if (!ensure(AimingComponent))
+		return;
+
+	FoundAimingComponent(AimingComponent);
 }
+
 
 void ATankPlayerController::Tick(float DeltaTime)
 {
@@ -34,7 +32,8 @@ ATank * ATankPlayerController::GetControlledTank() const
 void ATankPlayerController::AimTowardCrosshair()
 {
 	ATank* Tank = GetControlledTank();
-	if (!Tank) return;
+	if (!ensure(Tank))
+		return;
 
 	FVector OutHitLocation;
 
@@ -79,8 +78,6 @@ bool ATankPlayerController::GetLookHitResultLocation(FVector2D CrosshairLocation
 		OutHitLocation = LookHitResult.Location;
 		return true;
 	}
-	else
-		UE_LOG(LogTemp, Warning, TEXT("HitTest Failed"));
 
 	return false;
 }

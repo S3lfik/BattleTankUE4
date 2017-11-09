@@ -29,12 +29,16 @@ class BATTLETANKUE4_API ATankPlayerController : public APlayerController
 	GENERATED_BODY()
 
 public:
-
+	UFUNCTION(BlueprintCallable, Category = "Setup")
 	ATank* GetControlledTank() const;
 
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
 	void AimTowardCrosshair();
+
+protected:
+	UFUNCTION(BlueprintImplementableEvent)
+	void FoundAimingComponent(UTankAimingComponent* AimingComponent);
 
 private:
 	bool IsSightRayHitLandscape(FVector& OutHitLocation) const;

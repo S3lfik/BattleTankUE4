@@ -10,6 +10,7 @@
 UTankAimingComponent::UTankAimingComponent()
 	: TankBarrel(nullptr)
 	, TankTurret(nullptr)
+	, FiringState(EFiringState::Reloading)
 {
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
@@ -23,7 +24,6 @@ UTankAimingComponent::UTankAimingComponent()
 void UTankAimingComponent::BeginPlay()
 {
 	Super::BeginPlay();
-	UE_LOG(LogTemp, Warning, TEXT("AimingComponent is ready for %s"), *(GetOwner()->GetName()));
 	// ...
 	
 }
@@ -32,7 +32,7 @@ void UTankAimingComponent::AimAt(FVector HitLocation, float LaunchSpeed)
 {
 	auto OwnerName = GetOwner()->GetName();
 	
-	if (TankBarrel)
+	if (!ensure(TankBarrel))
 	{
 
 		FVector LaunchVelocity;
@@ -49,15 +49,12 @@ void UTankAimingComponent::AimAt(FVector HitLocation, float LaunchSpeed)
 	}
 }
 
-void UTankAimingComponent::SetBarrelRef(UTankBarrel * BarrelToSet)
+void UTankAimingComponent::Initialise(UTankBarrel * BarrelToSet, UTankTurret * TurretToSet)
 {
-	if (BarrelToSet)
-		TankBarrel = BarrelToSet;
-}
+	if (!BarrelToSet || !TurretToSet)
+		return;
 
-void UTankAimingComponent::SetTurretRef(UTankTurret * TurretToSet)
-{
-	if (TurretToSet)
+		TankBarrel = BarrelToSet;
 		TankTurret = TurretToSet;
 }
 
@@ -71,7 +68,7 @@ void UTankAimingComponent::TickComponent(float DeltaTime, ELevelTick TickType, F
 
 void UTankAimingComponent::MoveBarrelTowards(FVector AimDirection)
 {
-	if (!TankBarrel)
+	if (!ensure(TankBarrel))
 		return;
 
 	FRotator BarrelRotator = TankBarrel->GetForwardVector().Rotation();
@@ -84,8 +81,9 @@ void UTankAimingComponent::MoveBarrelTowards(FVector AimDirection)
 
 void UTankAimingComponent::MoveTurretTowards(FVector AimDirection)
 {
-	if (!TankTurret)
+	if (!ensure(TankTurret))
 		return;
+
 	FRotator BarrelRotator = TankBarrel->GetForwardVector().Rotation();
 	FRotator AimAsRotator = AimDirection.Rotation();
 	FRotator RotationDiff = AimAsRotator - BarrelRotator;
