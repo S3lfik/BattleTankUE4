@@ -3,6 +3,7 @@
 #include "TankAimingComponent.h"
 #include "TankBarrel.h"
 #include "TankTurret.h"
+#include "Projectile.h"
 #include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
 
 
@@ -28,25 +29,22 @@ void UTankAimingComponent::BeginPlay()
 	
 }
 
-void UTankAimingComponent::AimAt(FVector HitLocation, float LaunchSpeed)
+void UTankAimingComponent::AimAt(FVector HitLocation)
 {
-	auto OwnerName = GetOwner()->GetName();
-	
-	if (!ensure(TankBarrel))
+	if (!ensure(TankBarrel) || !ensure(TankTurret))
+		return;
+
+	FVector LaunchVelocity;
+	FVector StartLocation = TankBarrel->GetSocketLocation(FName("ProjectileOut"));
+
+	if (!UGameplayStatics::SuggestProjectileVelocity(this, LaunchVelocity, StartLocation, HitLocation, LaunchSpeed,
+		false, 0.f, 0.f, ESuggestProjVelocityTraceOption::DoNotTrace))//, FCollisionResponseParams::DefaultResponseParam, TArray<AActor*>(), true))
 	{
-
-		FVector LaunchVelocity;
-		FVector StartLocation = TankBarrel->GetSocketLocation(FName("ProjectileOut"));
-
-		if (!UGameplayStatics::SuggestProjectileVelocity(this, LaunchVelocity, StartLocation, HitLocation, LaunchSpeed, 
-			false, 0.f, 0.f, ESuggestProjVelocityTraceOption::DoNotTrace))//, FCollisionResponseParams::DefaultResponseParam, TArray<AActor*>(), true))
-		{
-			return;
-		}
-
-		FVector AimDirection = LaunchVelocity.GetSafeNormal();
-		MoveBarrelTowards(AimDirection);
+		return;
 	}
+
+	FVector AimDirection = LaunchVelocity.GetSafeNormal();
+	AimTowardsVector(AimDirection);
 }
 
 void UTankAimingComponent::Initialise(UTankBarrel * BarrelToSet, UTankTurret * TurretToSet)
@@ -54,8 +52,8 @@ void UTankAimingComponent::Initialise(UTankBarrel * BarrelToSet, UTankTurret * T
 	if (!BarrelToSet || !TurretToSet)
 		return;
 
-		TankBarrel = BarrelToSet;
-		TankTurret = TurretToSet;
+	TankBarrel = BarrelToSet;
+	TankTurret = TurretToSet;
 }
 
 // Called every frame
@@ -66,9 +64,9 @@ void UTankAimingComponent::TickComponent(float DeltaTime, ELevelTick TickType, F
 	// ...
 }
 
-void UTankAimingComponent::MoveBarrelTowards(FVector AimDirection)
+void UTankAimingComponent::AimTowardsVector(FVector AimDirection)
 {
-	if (!ensure(TankBarrel))
+	if (!ensure(TankBarrel) || !ensure(TankTurret))
 		return;
 
 	FRotator BarrelRotator = TankBarrel->GetForwardVector().Rotation();
@@ -79,15 +77,21 @@ void UTankAimingComponent::MoveBarrelTowards(FVector AimDirection)
 	TankTurret->Rotate(RotationDiff.Yaw);
 }
 
-void UTankAimingComponent::MoveTurretTowards(FVector AimDirection)
+void UTankAimingComponent::Fire()
 {
-	if (!ensure(TankTurret))
-		return;
+	if (!ensure(TankBarrel && ProjectileRef))
+	return;
 
-	FRotator BarrelRotator = TankBarrel->GetForwardVector().Rotation();
-	FRotator AimAsRotator = AimDirection.Rotation();
-	FRotator RotationDiff = AimAsRotator - BarrelRotator;
+	bool isReloaded = (FPlatformTime::Seconds() - LastFireTime) > ReloadTimeInSeconds;
 
-	TankTurret->Rotate(RotationDiff.Yaw);
+	if (isReloaded)
+	{
+		auto Projectile = GetWorld()->SpawnActor<AProjectile>(ProjectileRef
+			, TankBarrel->GetSocketLocation(FName("ProjectileOut"))
+			, TankBarrel->GetSocketRotation(FName("ProjectileOut")));
+
+		Projectile->LaunchProjectile(LaunchSpeed);
+
+		LastFireTime = FPlatformTime::Seconds();
+	}
 }
-
