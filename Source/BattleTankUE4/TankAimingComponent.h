@@ -41,16 +41,16 @@ protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
+	// Called every frame
+	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+
 protected:
 	UPROPERTY(BlueprintReadOnly, Category = "Aiming")
 	EFiringState FiringState;
 
-public:	
-	// Called every frame
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-
 private:
 	void AimTowardsVector(FVector AimDirection);
+	bool IsBarrelMoving() const;
 	
 private:
 	UTankBarrel* TankBarrel;
@@ -66,4 +66,6 @@ private:
 	float ReloadTimeInSeconds = 2.f;
 
 	double LastFireTime = 0.0;
+
+	FVector AimDirection;
 };
