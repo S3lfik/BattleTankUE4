@@ -45,10 +45,7 @@ bool ATankPlayerController::IsSightRayHitLandscape(FVector& OutHitLocation) cons
 	GetViewportSize(ViewportWidth, ViewportHeight);
 	FVector2D CrosshairLocation = FVector2D(ViewportWidth * CrosshairXRatio, ViewportHeight * CrosshairYRatio);
 	
-	if (GetLookHitResultLocation(CrosshairLocation, OutHitLocation))
-		return true;
-	else
-		return false;
+	return GetLookHitResultLocation(CrosshairLocation, OutHitLocation);
 }
 
 bool ATankPlayerController::GetLookHitResultLocation(FVector2D CrosshairLocation, FVector & OutHitLocation) const

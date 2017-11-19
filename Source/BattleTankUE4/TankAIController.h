@@ -23,6 +23,6 @@ private:
 
 	// Acceptance distance to get to target AActor
 	UPROPERTY(EditDefaultsOnly, Category = "Driving")
-	float AcceptanceRadius;
+	float AcceptanceRadius = 3000;
 };
 

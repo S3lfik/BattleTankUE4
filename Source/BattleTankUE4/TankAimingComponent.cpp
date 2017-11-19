@@ -84,7 +84,11 @@ void UTankAimingComponent::AimTowardsVector(FVector AimDirection)
 	FRotator RotationDiff = AimAsRotator - BarrelRotator;
 
 	TankBarrel->Elevate(RotationDiff.Pitch);
-	TankTurret->Rotate(RotationDiff.Yaw);
+
+	if( FMath::Abs(RotationDiff.Yaw) < 180.f)
+		TankTurret->Rotate(RotationDiff.Yaw);
+	else
+		TankTurret->Rotate(-RotationDiff.Yaw);
 }
 
 bool UTankAimingComponent::IsBarrelMoving() const
