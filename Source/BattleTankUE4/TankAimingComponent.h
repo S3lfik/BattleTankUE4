@@ -39,7 +39,7 @@ public:
 	void Initialise(UTankBarrel* BarrelToSet, UTankTurret* TurretToSet);
 
 	UFUNCTION(BlueprintCallable, Category = "Firing")
-	int GetRoundsLeft() const;
+	int32 GetRoundsLeft() const;
 
 protected:
 	// Called when the game starts
@@ -69,10 +69,10 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "Firing")
 	float ReloadTimeInSeconds = 2.f;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Firing")
+	int32 RoundsLeft = 300;
+
 	double LastFireTime = 0.0;
 
 	FVector AimDirection;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Firing")
-	int RoundsLeft = 3;
 };

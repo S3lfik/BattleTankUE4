@@ -4,8 +4,12 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "GameFramework/ProjectileMovementComponent.h"
+
 #include "Projectile.generated.h"
+
+class UProjectileMovementComponent;
+class UStaticMeshComponent;
+class UParticleSystemComponent;
 
 UCLASS()
 class BATTLETANKUE4_API AProjectile : public AActor
@@ -25,6 +29,12 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-private:
-	UProjectileMovementComponent* ProjectileMovementComponent;	
+protected:
+	UProjectileMovementComponent* ProjectileMovementComponent;
+
+	UPROPERTY(EditAnywhere, Category = "Components")
+	UStaticMeshComponent* CollisionMesh;
+
+	UPROPERTY(EditAnywhere, Category = "Components")
+	UParticleSystemComponent* LaunchBlast;
 };
