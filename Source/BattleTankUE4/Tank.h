@@ -16,4 +16,12 @@ public:
 	ATank();
 
 	virtual void BeginPlay() override;
+	virtual float TakeDamage(float Damage, struct FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
+
+private:
+	UPROPERTY(EditDefaultsOnly, Category = "Setup")
+	int32 StartingHealth;
+
+	UPROPERTY(VisibleAnywhere, Category = "Health")
+	int32 CurrentHealth;
 };
