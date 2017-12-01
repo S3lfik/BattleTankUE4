@@ -30,6 +30,8 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	void OnTimerExpired();
+
 protected:
 	UProjectileMovementComponent* ProjectileMovementComponent;
 
@@ -49,4 +51,6 @@ private:
 
 	UPROPERTY(VisibleAnywhere, Category = "Components")
 	URadialForceComponent* ExplosionForce;
+
+	float DestroyDelay;
 };
