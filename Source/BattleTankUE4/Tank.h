@@ -18,6 +18,9 @@ public:
 	virtual void BeginPlay() override;
 	virtual float TakeDamage(float Damage, struct FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 
+	UFUNCTION(BlueprintPure, Category = "Health")
+	float GetCurrentHealthPercentage();
+
 private:
 	UPROPERTY(EditDefaultsOnly, Category = "Setup")
 	int32 StartingHealth;
