@@ -30,7 +30,9 @@ void ATankAIController::Tick(float DeltaTime)
 	MoveToActor(PlayerTank, AcceptanceRadius);
 
 	AimingComponent->AimAt(PlayerTank->GetActorLocation());
-	AimingComponent->Fire();
+
+	if(AimingComponent->GetFiringState() == EFiringState::Locked)
+		AimingComponent->Fire();
 }
 
 void ATankAIController::SetPawn(APawn * InPawn)
@@ -51,5 +53,11 @@ void ATankAIController::SetPawn(APawn * InPawn)
 void ATankAIController::OnPosessedTankDeath()
 {
 	UE_LOG(LogTemp, Warning, TEXT("Tank is destroyed"));
+	auto PossessedTank = GetPawn();
+
+	if (!ensure(PossessedTank))
+		return;
+
+	PossessedTank->DetachFromControllerPendingDestroy();
 }
 

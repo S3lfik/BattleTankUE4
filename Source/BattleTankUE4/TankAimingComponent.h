@@ -41,6 +41,8 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Firing")
 	int32 GetRoundsLeft() const;
 
+	EFiringState GetFiringState() const;
+
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;

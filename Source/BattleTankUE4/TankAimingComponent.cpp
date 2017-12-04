@@ -53,6 +53,11 @@ int32 UTankAimingComponent::GetRoundsLeft() const
 	return RoundsLeft;
 }
 
+EFiringState UTankAimingComponent::GetFiringState() const
+{
+	return FiringState;
+}
+
 void UTankAimingComponent::AimAt(FVector HitLocation)
 {
 	if (!ensure(TankBarrel) || !ensure(TankTurret))
